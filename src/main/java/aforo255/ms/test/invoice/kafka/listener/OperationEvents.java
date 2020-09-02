@@ -29,16 +29,20 @@ public class OperationEvents {
 	public void processTransactionEvent(ConsumerRecord<Integer, String> consumerRecord)
 			throws JsonMappingException, JsonProcessingException {
 		double newAmount = 0;
-		Invoice account = new Invoice();
+		Invoice invoice = new Invoice();
 
 		Operation event = objectMapper.readValue(consumerRecord.value(), Operation.class);
 		log.info("transactionEvent: {} ", event.getInvoiceId());
-		account = repository.findById(event.getInvoiceId());
-		newAmount = account.getAmount() + event.getAmount();
-		account.setAmount(newAmount);
-		log.info("Actualizando Saldo Factura " + event.getInvoiceId());
-		repository.save(account);
-
+		invoice = repository.findById(event.getInvoiceId());
+		
+		newAmount = invoice.getAmount() - event.getAmount();
+		if(newAmount>=0) {
+			invoice.setAmount(newAmount);
+			log.info("===> Invoice: Pagando Factura: " + event.getInvoiceId() +"de "+invoice.getAmount()+ "con "+ event.getAmount());
+			repository.save(invoice);
+		}else {
+			log.info("===> Invoice: Factura Paga en totalidad!! " + event.getInvoiceId());
+		}
 	}
 
 }
