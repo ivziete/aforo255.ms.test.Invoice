@@ -37,11 +37,11 @@ public class OperationEvents {
 		
 		newAmount = invoice.getAmount() - event.getAmount();
 		if(newAmount>=0) {
+			log.info("\n===> Invoice: Pagando Factura: " + event.getInvoiceId() +" de "+invoice.getAmount()+ " con "+ event.getAmount());
 			invoice.setAmount(newAmount);
-			log.info("===> Invoice: Pagando Factura: " + event.getInvoiceId() +"de "+invoice.getAmount()+ "con "+ event.getAmount());
 			repository.save(invoice);
 		}else {
-			log.info("===> Invoice: Factura Paga en totalidad!! " + event.getInvoiceId());
+			log.info("\n===> Invoice: Factura Paga en totalidad!! " + event.getInvoiceId());
 		}
 	}
 
